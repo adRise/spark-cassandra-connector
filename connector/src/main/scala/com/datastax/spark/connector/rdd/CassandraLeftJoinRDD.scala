@@ -6,6 +6,7 @@ import com.datastax.oss.driver.internal.core.cql.ResultSets
 import com.datastax.spark.connector._
 import com.datastax.spark.connector.util.maybeExecutingAs
 import com.datastax.spark.connector.cql._
+import com.datastax.spark.connector.datasource.JoinHelper
 import com.datastax.spark.connector.rdd.reader._
 import com.datastax.spark.connector.writer._
 import com.google.common.util.concurrent.{FutureCallback, Futures, SettableFuture}
@@ -149,6 +150,7 @@ class CassandraLeftJoinRDD[L, R] (
     leftIterator: Iterator[L],
     metricsUpdater: InputMetricsUpdater
   ): Iterator[(L, Option[R])] = {
+    import com.datastax.spark.connector.util.Threads.BlockingIOExecutionContext
 
     val queryExecutor = QueryExecutor(session, readConf.parallelismLevel, None, None)
 
@@ -156,9 +158,12 @@ class CassandraLeftJoinRDD[L, R] (
       val resultFuture = SettableFuture.create[Iterator[(L, Option[R])]]
       val leftSide = Iterator.continually(left)
 
-      queryExecutor.executeAsync(bsb.bind(left).executeAs(readConf.executeAs)).onComplete {
+      val stmt = bsb.bind(left)
+        .update(_.setPageSize(readConf.fetchSizeInRows))
+        .executeAs(readConf.executeAs)
+      queryExecutor.executeAsync(stmt).onComplete {
         case Success(rs) =>
-          val resultSet = new PrefetchingResultSetIterator(ResultSets.newInstance(rs), fetchSize)
+          val resultSet = new PrefetchingResultSetIterator(rs)
           val iteratorWithMetrics = resultSet.map(metricsUpdater.updateMetrics)
           /* This is a much less than ideal place to actually rate limit, we are buffering
           these futures this means we will most likely exceed our threshold*/
@@ -170,14 +175,15 @@ class CassandraLeftJoinRDD[L, R] (
           resultFuture.set(leftSide.zip(rightSide))
         case Failure(throwable) =>
           resultFuture.setException(throwable)
-      }(ExecutionContext.Implicits.global) // TODO: use dedicated context, use Future instead of SettableFuture
+      }
 
       resultFuture
     }
+
     val queryFutures = leftIterator.map(left => {
       requestsPerSecondRateLimiter.maybeSleep(1)
       pairWithRight(left)
     })
-    slidingPrefetchIterator(queryFutures, readConf.parallelismLevel).flatten
+    JoinHelper.slidingPrefetchIterator(queryFutures, readConf.parallelismLevel).flatten
   }
 }

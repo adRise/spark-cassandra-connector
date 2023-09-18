@@ -4,31 +4,53 @@
 This section describes how Spark connects to Cassandra and 
 how to execute CQL statements from Spark applications.
 
-### Preparing `SparkContext` to work with Cassandra
-
-To connect your Spark application to Cassandra, set connection options in the 
-`SparkConf` object. These are prefixed with `spark.` so that they can be recognized
-from `spark-shell` and set in `$SPARK_HOME/conf/spark-default.conf`.
-
-Example:
-
-```scala
-val conf = new SparkConf(true)
-        .set("spark.cassandra.connection.host", "192.168.123.10")
-        .set("spark.cassandra.auth.username", "cassandra")            
-        .set("spark.cassandra.auth.password", "cassandra")
-
-val sc = new SparkContext("spark://192.168.123.10:7077", "test", conf)
-```
-
-Multiple hosts can be passed in using a comma-separated list in `spark.cassandra.connection.host`
-(e.g. `"127.0.0.1,127.0.0.2"`). These are the *initial contact points only*, all nodes in the local DC will be used upon connecting.
-
 See the reference section for [Cassandra Connection Parameters](reference.md#cassandra-connection-parameters).
 
-### Connecting using an Astra Cloud Bundle or Driver Profile File (Since SCC 3.0)
+### Configuring Catalogs to Cassandra
 
-Using a separate configuration file can be done as long as 
+DatasourceV2 introduced in Spark 3.0 makes connecting to Cassandra now easier than ever. Parameters for configuring your connection
+can be done in the SparkConf, SparkSession, spark-defaults file or individually for the Catalog.  Once a catalog is configured it can 
+be accessed through both SparkSql and DataFrames to read from, write to, create, and drop Cassandra tables.
+
+While setting up a Catalog can be done before starting your application it can also be done at 
+runtime by setting  ```spark.sql.catalog.anyname``` to  ```com.datastax.spark.connector.datasource.CassandraCatalog```
+In your SparkSession. The "anyname" portion can be any name you would like to specify for this 
+particular catalog.
+
+Then any parameter for that catalog can be set by just appending the parameter name to the catalog name as in
+```spark.sql.catalog.anyname.propertykey``` to ```propertyvalue```
+
+Example: Manually configuring a Catalog named Cass100
+
+```scala
+spark.conf.set(s"spark.sql.catalog.cass100", "com.datastax.spark.connector.datasource.CassandraCatalog")
+spark.conf.set(s"spark.sql.catalog.cass100.spark.cassandra.connection.host", "127.0.0.100")
+```
+
+Once this is set, we can access the catalog by using the triple part identifier of 
+```catalog.keyspace.table``` which in this case would be ```cass100.ks.tab```
+
+#### Example of reading from one cluster and writing to another
+
+Using multiple clusters can be done by setting up one catalog per underlying cluster.
+
+```scala
+//Catalog Cass100 for Cluster at 127.0.0.100
+spark.conf.set(s"spark.sql.catalog.cass100", "com.datastax.spark.connector.datasource.CassandraCatalog")
+spark.conf.set(s"spark.sql.catalog.cass100.spark.cassandra.connection.host", "127.0.0.100")
+
+//Catalog Cass200 for Cluster at 127.0.0.200
+spark.conf.set(s"spark.sql.catalog.cass200", "com.datastax.spark.connector.datasource.CassandraCatalog")
+spark.conf.set(s"spark.sql.catalog.cass200.spark.cassandra.connection.host", "127.0.0.200")
+
+spark.sql("INSERT INTO cass200.ks.tab SELECT * from cass100.ks.tab")
+//Or
+spark.read.table("cass100.ks.tab").writeTo("cass200.ks.tab").append
+```
+
+### Connecting using an Astra Cloud Bundle or Driver Profile File (Since SCC 2.5)
+
+Using a separate DSE Java Driver configuration file can also be used for your Catalog as long as 
 
 * The file is either already accessible on a distributed file system (hdfs:// or s3a:// for example). 
 
@@ -41,7 +63,7 @@ files added in this way just pass the file name to either of the following param
 
 Files are then referenced through one of the following parameters
 
-  1. `spark.cassandra.connection.config.cloud.path` for use with a Cloud Secure Connect bundle from [Datastax Astra]("https://astra.datastax.com/")
+  1. `spark.cassandra.connection.config.cloud.path` for use with a Cloud Secure Connect bundle from [Datastax Astra]("https://astra.datastax.com/").  Please note that you must provide user name and password as well using corresponding configuration properties;
   2. `spark.cassandra.connection.config.profile.path` for use with a Java Driver [Profile](https://docs.datastax.com/en/developer/java-driver/4.2/manual/core/configuration/) 
   
 When using a profile file all other configuration will be ignored. We are working on improving this behavior but at the moment,
@@ -100,8 +122,8 @@ see [Cassandra Connection Parameters](reference.md#cassandra-connection-paramete
 
 If you ever need to manually connect to Cassandra in order to issue some CQL statements, 
 this driver offers a handy `CassandraConnector` class which can be initialized 
-from the `SparkConf` object and provides access to the `Cluster` and 
-`Session` objects. `CassandraConnector` instances are serializable
+from the `SparkConf` object and provides access to the `Session` objects. 
+`CassandraConnector` instances are serializable
 and therefore can be safely used in lambdas passed to Spark transformations
 as seen in the examples above.
 
@@ -117,41 +139,6 @@ CassandraConnector(conf).withSessionDo { session =>
 }
 ```
 
-### Connecting to multiple Cassandra Clusters
-
-The Spark Cassandra Connector is able to connect to multiple Cassandra 
-Clusters for all of its normal operations.
-The default `CassandraConnector` object used by calls to `sc.cassandraTable` and `saveToCassandra` is specified by the `SparkConfiguration`. If you would like to use multiple clusters,
-an implicit `CassandraConnector` can be used in a code block to specify 
-the target cluster for all operations in that block.
-
-#### Example of reading from one cluster and writing to another
-
-```scala
-import com.datastax.spark.connector._
-import com.datastax.spark.connector.cql._
-
-import org.apache.spark.SparkContext
-
-def twoClusterExample ( sc: SparkContext) = {
-  val connectorToClusterOne = CassandraConnector(sc.getConf.set("spark.cassandra.connection.host", "127.0.0.1"))
-  val connectorToClusterTwo = CassandraConnector(sc.getConf.set("spark.cassandra.connection.host", "127.0.0.2"))
-
-  val rddFromClusterOne = {
-    // Sets connectorToClusterOne as default connection for everything in this code block
-    implicit val c = connectorToClusterOne
-    sc.cassandraTable("ks","tab")
-  }
-
-  {
-    //Sets connectorToClusterTwo as the default connection for everything in this code block
-    implicit val c = connectorToClusterTwo
-    rddFromClusterOne.saveToCassandra("ks","tab")
-  }
-
-}
-```
-
-[Next - Accessing data with RDDs](2_loading.md)
-[Jump to - Accessing data with DataFrames](14_data_frames.md)
+[(Recommended) Accessing data with DataFrames](14_data_frames.md)
+[(Legacy) Accessing data with RDDs](2_loading.md)
 

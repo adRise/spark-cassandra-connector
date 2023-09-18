@@ -8,14 +8,25 @@
 <tr>
   <td><code>spark.cassandra.connection.config.cloud.path</code></td>
   <td>None</td>
-  <td>Specifies a default CloudConnectionBundle file to be for this connection. Accepts URLs (including HDFS Compatible URI's) as
-and references to files passed in via --files</td>
+  <td>Path to Secure Connect Bundle to be used for this connection. Accepts URLs and references to files
+distributed via spark.files (--files) setting.<br/>
+Provided URL must by accessible from each executor.<br/>
+Using spark.files is recommended as it relies on Spark to distribute the bundle to every executor and
+leverages Spark capabilities to access files located in distributed file systems like HDFS, S3, etc.
+For example, to use a bundle located in HDFS in spark-shell:
+
+    spark-shell --conf spark.files=hdfs:///some_dir/bundle.zip \
+       --conf spark.cassandra.connection.config.cloud.path=bundle.zip \
+       --conf spark.cassandra.auth.username=<name> \
+       --conf spark.cassandra.auth.password=<pass> ...
+
+</td>
 </tr>
 <tr>
   <td><code>spark.cassandra.connection.config.profile.path</code></td>
   <td>None</td>
-  <td>Specifies a default Java Driver 4.0 Profile file to be used for this connection. Accepts URLs (including HDFS Compatible URI's) as
-and references to files passed in via --files</td>
+  <td>Specifies a default Java Driver 4.0 Profile file to be used for this connection. Accepts
+URLs and references to files distributed via spark.files (--files) setting.</td>
 </tr>
 </table>
 
@@ -166,7 +177,7 @@ retrieve size from Cassandra. Can be set manually now</td>
 <tr>
   <td><code>spark.sql.dse.search.autoRatio</code></td>
   <td>0.03</td>
-  <td>When Search Predicate Optimization is set to auto, Search optimizations will be preformed if this parameter * the total number of rows is greater than the number of rowsto be returned by the solr query</td>
+  <td>When Search Predicate Optimization is set to auto, Search optimizations will be preformed if this parameter * the total number of rows is greater than the number of rows to be returned by the solr query</td>
 </tr>
 <tr>
   <td><code>spark.sql.dse.search.enableOptimization</code></td>

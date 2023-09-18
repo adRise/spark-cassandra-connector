@@ -13,14 +13,15 @@ object Dependencies
     val sparkCatalyst = "org.apache.spark" %% "spark-catalyst" % ApacheSpark % "provided" // ApacheV2
     val sparkHive = "org.apache.spark" %% "spark-hive" % ApacheSpark % "provided" // ApacheV2
 
+
     val dependencies = Seq(
       sparkCore,
       sparkRepl,
       sparkUnsafe,
       sparkStreaming,
       sparkSql,
-      sparkCatalyst,
-      sparkHive)
+      sparkHive,
+      sparkCatalyst)
   }
 
   implicit class Exclude(module: ModuleID) {
@@ -31,6 +32,11 @@ object Dependencies
 
     def driverCoreExclude(): ModuleID = module
       .exclude("com.datastax.oss", "java-driver-core") // doesn't shade guava
+      .exclude("org.apache.tinkerpop", "*")
+      // until SPARK-20075 is fixed we fallback to java workarounds for native calls
+      .exclude("com.github.jnr", "jnr-posix")
+      .exclude("org.yaml", "snakeyaml")
+      .exclude("org.apache.commons", "commons-lang3")
   }
 
   object TestCommon {
@@ -69,16 +75,13 @@ object Dependencies
   }
 
   object Driver {
-    val driverCore = ("com.datastax.oss" % "java-driver-core-shaded" % DataStaxJavaDriver)
-      .exclude("org.yaml", "snakeyaml")
-      .exclude("org.apache.commons", "commons-lang3")
+    val driverCore = "com.datastax.oss" % "java-driver-core-shaded" % DataStaxJavaDriver driverCoreExclude()
     val driverMapper = "com.datastax.oss" % "java-driver-mapper-runtime" % DataStaxJavaDriver driverCoreExclude()
 
-    val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % Versions.ScalaLogging
     val commonsLang3 = "org.apache.commons" % "commons-lang3" % Versions.CommonsLang3 % "provided"
     val paranamer = "com.thoughtworks.paranamer" % "paranamer" % Versions.Paranamer
 
-    val dependencies = Seq(driverCore, driverMapper, commonsLang3, paranamer, scalaLogging)
+    val dependencies = Seq(driverCore, driverMapper, commonsLang3, paranamer)
   }
 
   object TestDriver {

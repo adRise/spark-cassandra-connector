@@ -4,10 +4,10 @@
 
 | What       | Where |
 | ---------- | ----- |
-| Packages   | [Spark Cassandra Connector Spark Packages Website](https://spark-packages.org/package/datastax/spark-cassandra-connector) |
-| Community  | Chat with us at [DataStax Academy's #spark-connector Slack channel](#slack) |
-| Scala Docs | Most Recent Release (2.4.2): [Spark-Cassandra-Connector](https://datastax.github.io/spark-cassandra-connector/ApiDocs/2.4.2/spark-cassandra-connector/), [Embedded-Cassandra](https://datastax.github.io/spark-cassandra-connector/ApiDocs/2.4.2/spark-cassandra-connector-embedded/) |
-
+| Community  | Chat with us at [Datastax and Cassandra Q&A](https://community.datastax.com/index.html) |
+| Scala Docs | Most Recent Release (3.0.0): [Spark-Cassandra-Connector](https://datastax.github.io/spark-cassandra-connector/ApiDocs/3.0.0/connector/com/datastax/spark/connector/index.html), [Spark-Cassandra-Connector-Driver](https://datastax.github.io/spark-cassandra-connector/ApiDocs/3.0.0/driver/com/datastax/spark/connector/index.html)|
+| Latest Production Release | [3.0.0](https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector_2.12/3.0.0) |
+ 
 ## Features
 
 *Lightning-fast cluster computing with Apache Spark&trade; and Apache Cassandra&reg;.*
@@ -44,7 +44,8 @@ development for the next connector release in progress.
 
 | Connector | Spark         | Cassandra | Cassandra Java Driver | Minimum Java Version | Supported Scala Versions |
 | --------- | ------------- | --------- | --------------------- | -------------------- | -----------------------  |
-| 3.0.0     | 2.4           | 2.1.5*, 2.2, 3.x, 4.0 | 4.5              | 8             | 2.11, 2.12               |
+| 3.0       | 3.0           | 2.1.5*, 2.2, 3.x, 4.0 | 4.7              | 8             | 2.12                     |
+| 2.5       | 2.4           | 2.1.5*, 2.2, 3.x, 4.0 | 4.7              | 8             | 2.11, 2.12               |
 | 2.4.2     | 2.4           | 2.1.5*, 2.2, 3.x      | 3.0              | 8             | 2.11, 2.12               |
 | 2.4       | 2.4           | 2.1.5*, 2.2, 3.x      | 3.0              | 8             | 2.11                     |
 | 2.3       | 2.3           | 2.1.5*, 2.2, 3.x      | 3.0              | 8             | 2.11                     |
@@ -61,6 +62,13 @@ development for the next connector release in progress.
 
 ## Hosted API Docs
 API documentation for the Scala and Java interfaces are available online:
+
+### 3.0.0
+* [Spark-Cassandra-Connector](https://datastax.github.io/spark-cassandra-connector/ApiDocs/3.0.0/connector/com/datastax/spark/connector/index.html)
+
+### 2.5.1
+* [Spark-Cassandra-Connector](https://datastax.github.io/spark-cassandra-connector/ApiDocs/2.5.1/connector/#package)
+
 ### 2.4.2
 * [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/2.4.2/spark-cassandra-connector/)
 * [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/2.4.2/spark-cassandra-connector-embedded/)
@@ -69,46 +77,16 @@ API documentation for the Scala and Java interfaces are available online:
 * [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/2.3.2/spark-cassandra-connector/)
 * [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/2.3.2/spark-cassandra-connector-embedded/)
 
-### 2.0.10
-* [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/2.0.10/spark-cassandra-connector/)
-* [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/2.0.10/spark-cassandra-connector-embedded/)
-
-### 1.6.13
-* [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.6.13/spark-cassandra-connector/)
-* [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.6.13/spark-cassandra-connector-embedded/)
-
-### 1.5.2
-* [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.5.2/spark-cassandra-connector/)
-* [Spark-Cassandra-Connector-Java](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.5.2/spark-cassandra-connector-java/)
-* [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.5.0/spark-cassandra-connector-embedded/)
-
-### 1.4.5
-* [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.4.5/spark-cassandra-connector/)
-* [Spark-Cassandra-Connector-Java](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.4.5/spark-cassandra-connector-java/)
-* [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.4.2/spark-cassandra-connector-embedded/)
-
-### 1.3.1
-* [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.3.1/spark-cassandra-connector/)
-* [Spark-Cassandra-Connector-Java](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.3.1/spark-cassandra-connector-java/)
-* [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.3.1/spark-cassandra-connector-embedded/)
-
-### 1.2.0
-* [Spark-Cassandra-Connector](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.2.0/spark-cassandra-connector/)
-* [Spark-Cassandra-Connector-Java](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.2.0/spark-cassandra-connector-java/)
-* [Embedded-Cassandra](http://datastax.github.io/spark-cassandra-connector/ApiDocs/1.2.0/spark-cassandra-connector-embedded/)
-
 ## Download
-This project is available on Spark Packages; this is the easiest way to start using the connector:
-https://spark-packages.org/package/datastax/spark-cassandra-connector
 
-This project has also been published to the Maven Central Repository.
+This project is available on the Maven Central Repository.
 For SBT to download the connector binaries, sources and javadoc, put this in your project
 SBT config:
 
-    libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "2.4.2"
+    libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "3.0.0"
 
-* The default Scala version for Spark 2.0+ is 2.11 please choose the appropriate build. See the
-[FAQ](doc/FAQ.md) for more information
+* The default Scala version for Spark 3.0+ is 2.12 please choose the appropriate build. See the
+[FAQ](doc/FAQ.md) for more information.
 
 ## Building
 See [Building And Artifacts](doc/12_building_and_artifacts.md)
@@ -153,9 +131,12 @@ reproducible case with sample code is ideal.
 
 Questions and requests for help may be submitted to the [user mailing list](https://groups.google.com/a/lists.datastax.com/forum/#!forum/spark-connector-user).
 
-### Slack
 
-The project uses Slack to facilitate conversation in our community. Find us in the `#spark-connector` channel at [DataStax Academy Slack](https://academy.datastax.com/slack).
+## Q/A Exchange
+
+The [DataStax Community](https://community.datastax.com/index.html) provides a free question and answer website for any and all
+questions relating to any DataStax Related technology. Including the Spark Cassandra Connector. Both DataStax 
+engineers and community members frequent this board and answer questions.
 
 ## Contributing
 
@@ -181,6 +162,9 @@ To run unit and integration tests:
 
     ./sbt/sbt test
     ./sbt/sbt it:test
+
+Note that the integration tests require [CCM](https://github.com/riptano/ccm) to be installed on your machine.
+See [Tips for Developing the Spark Cassandra Connector](doc/developers.md) for details.
 
 By default, integration tests start up a separate, single Cassandra instance and run Spark in local mode.
 It is possible to run integration tests with your own Cassandra and/or Spark cluster.

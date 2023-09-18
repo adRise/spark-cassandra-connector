@@ -1,6 +1,20 @@
+3.0.0
+ * Update Spark to 3.0.1 and commons-lang to 3.9
+ * Remove full table scans performance regression (SPARKC-614)
+ * Restore PrefetchingResultSetIterator (SPARKC-619)
+ * Restore ContinuousPaging properties (SPARKC-606)
+ * Integration tests work with C* 4.0.0-beta (SPARKC-615)
+ * Fix USE <catalog> command (SPARKC-615)
 
+3.0.0-beta
+ * Data Source v2 support
+ * Secondary artifact with shaded typesafe.config
 
-***************************************************************************
+2.5.1
+ * Introduce shaded version of the main artifact to fix integration with Databricks Cloud
+ * Exclude com.github.jnr and org.apache.tinkerpop dependencies to fix --packages
+ * Improve Astra connection properties
+
 2.5.0
  * LTS Release for Spark 2.4
 
@@ -25,6 +39,9 @@
      * More
 
 *******************************************************************************
+
+2.4.3
+  * Fix issue with Hadoop3 Compatibility
 
 2.4.2
   * Support for Scala 2.12 (SPARKC-458)
