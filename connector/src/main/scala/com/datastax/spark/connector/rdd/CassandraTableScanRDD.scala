@@ -7,7 +7,7 @@ import com.datastax.spark.connector.cql._
 import com.datastax.spark.connector.datasource.ScanHelper
 import com.datastax.spark.connector.datasource.ScanHelper.CqlQueryParts
 import com.datastax.spark.connector.rdd.CassandraLimit._
-import com.datastax.spark.connector.rdd.partitioner.dht.{Token => ConnectorToken}
+import com.datastax.spark.connector.rdd.partitioner.dht.{TokenFactory, Token => ConnectorToken}
 import com.datastax.spark.connector.rdd.partitioner.{CassandraPartition, _}
 import com.datastax.spark.connector.rdd.reader._
 import com.datastax.spark.connector.util.{CountingIterator}
